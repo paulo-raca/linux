@@ -250,6 +250,41 @@ config MACH_FLEXIBITY
 	  Select this if you are using Flexibity Connect board
 	  <http://www.flexibity.com>
 
+config MACH_VERIDIS_A300
+	bool "Veridis A300 board"
+	select SERIAL_ATMEL
+	select HAVE_AT91_DATAFLASH_CARD
+	select HAVE_NAND_ATMEL_BUSWIDTH_16
+	select KEYBOARD_GPIO
+	select KEYBOARD_MATRIX
+	select LEDS_GPIO
+	select CHARLCD_GPIO
+	help
+	  Select this if you are using Veridis's A300 Rev A
+	  <http://www.veridistec.com.br>
+
+if MACH_VERIDIS_A300
+choice
+	prompt "A300 Revision"
+	default MACH_VERIDIS_A300A
+
+config MACH_VERIDIS_A300A
+	bool "Original A300 board"
+config MACH_VERIDIS_A300B
+	bool "Enhanced A300 board"
+endchoice
+
+if MACH_VERIDIS_A300B
+config CONFIG_MACH_VERIDIS_A300_WIEGANDO_ON_USART2
+	bool "Wiegand instead of USART3 / ttyS3?"
+	select WIEGAND_GPIO
+config CONFIG_MACH_VERIDIS_A300_WIEGANDO_ON_USART5
+	bool "Wiegand instead of USART5 / ttyS4?"
+	select WIEGAND_GPIO
+endif
+
+endif
+
 endif
 
 # ----------------------------------------------------------
