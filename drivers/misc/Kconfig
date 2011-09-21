@@ -461,6 +461,11 @@ config ARM_CHARLCD
 	  line and the Linux version on the second line, but that's
 	  still useful.
 
+config CHARLCD_GPIO
+	bool "GPIO HD44780 Character LCD Driver"
+	help
+	  This is a driver for HD44780 LCDs using GPIOs.
+
 config BMP085
 	tristate "BMP085 digital pressure sensor"
 	depends on I2C && SYSFS
