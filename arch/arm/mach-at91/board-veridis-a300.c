@@ -51,6 +51,32 @@
 #include "sam9_smc.h"
 #include "generic.h"
 
+static void a300_print_banner() {	
+	printk(" _    __           _      ___          ___   _____ ____  ____ \n");
+	printk("| |  / /___  _____(_)____/ (_)_____   /   | |__  // __ \\/ __ \\\n");
+	printk("| | / // _ \\/ ___/ // __  / // ___/  / /| |  /_ </ / / / / / /\n");
+	printk("| |/ //  __/ /  / // /_/ / /(__  )  / ___ |___/ / /_/ / /_/ / \n");
+	printk("|___/ \\___/_/  /_/ \\__,_/_//____/  /_/  |_/____/\\____/\\____/  \n");
+	printk("\n");
+	
+	if (system_rev) {
+		printk("Revision: ");
+		int rev=system_rev;
+		while (rev & 0xFFFF) {
+		  if (rev != system_rev)
+			printk(".");
+		  printk("%i", (rev >> 12) & 0xF);
+		  rev <<=4;
+		}
+		printk("\n");
+	}
+	if (system_serial_high) {
+		printk("Serial: %x%08x", system_serial_high, system_serial_low);
+	} else if (system_serial_low) {
+		printk("Serial: %x", system_serial_low);
+	}
+}
+
 /*
  * Serial ports
  */
@@ -86,6 +112,11 @@ static void __init a300_init_early(void)
 	
 	/* set serial console to ttyS0 (ie, DBGU) */
 	at91_set_serial_console(0);
+	
+	system_rev = 0x1230;
+	system_serial_high= 0xA300;
+	system_serial_low = 0x5617;
+	a300_print_banner();
 }
 
 
@@ -213,26 +244,26 @@ static struct gpio_led a300_leds[] = {
 	
 	/* ======== Relays ======== */
 	{
-		.name     = "relay:none:A",
+		.name     = "relay::A",
 		.gpio     = AT91_PIN_PB3,
 		.default_trigger  = "pulse"
 	},{
-		.name     = "relay:none:B",
+		.name     = "relay::B",
 		.gpio     = AT91_PIN_PB8,
 		.default_trigger  = "pulse"
 	}, {
-		.name     = "relay:none:C",
+		.name     = "relay::C",
 		.gpio     = AT91_PIN_PB9,
 		.default_trigger  = "pulse"
 	},
 
 	/* ======== MISC Digital outputs ======== */
 	{ 
-		.name     = "lcd:green:backlight",
+		.name     = "charlcd1::backlight",
 		.gpio     = AT91_PIN_PB10,
 		.default_trigger  = "pulse"
 	},{
-		.name     = "buzzer:none:buzzer",
+		.name     = "buzzer::buzzer",
 		.gpio     = AT91_PIN_PB11,
 		.default_trigger  = "pulse"
 	}
@@ -259,19 +290,19 @@ static struct gpio_led a300_leds[] = {
 
 	/* ======== Pictogram ======== */
 	{ 
-		.name     = "picto:green:left",
+		.name     = "turnstile1:green:picto_forward",
 		.gpio     = AT91_PIN_PC2,
 		.default_trigger  = "none",
 		.active_low = 1
 	},
 	{
-		.name     = "picto:red:stop",
+		.name     = "turnstile1:red:picto_stop",
 		.gpio     = AT91_PIN_PC0,
 		.default_trigger  = "none",
 		.active_low = 1
 	},
 	{
-		.name     = "picto:green:right",
+		.name     = "turnstile1:green:picto_backward",
 		.gpio     = AT91_PIN_PC1,
 		.default_trigger  = "none",
 		.active_low = 1
@@ -279,26 +310,26 @@ static struct gpio_led a300_leds[] = {
 	
 	/* ======== Relays ======== */
 	{
-		.name     = "relay:none:A",
+		.name     = "relay::A",
 		.gpio     = AT91_PIN_PB3,
 		.default_trigger  = "pulse"
 	},{
-		.name     = "relay:none:B",
+		.name     = "relay::B",
 		.gpio     = AT91_PIN_PB16,
 		.default_trigger  = "pulse"
 	}, {
-		.name     = "relay:none:C",
+		.name     = "relay::C",
 		.gpio     = AT91_PIN_PB17,
 		.default_trigger  = "pulse"
 	},
 
 	/* ======== MISC Digital outputs ======== */
 	{ 
-		.name     = "charlcd0:green:backlight",
+		.name     = "charlcd1::backlight",
 		.gpio     = AT91_PIN_PB10,
 		.default_trigger  = "pulse"
 	},{
-		.name     = "buzzer:none:buzzer",
+		.name     = "buzzer::buzzer",
 		.gpio     = AT91_PIN_PB11,
 		.default_trigger  = "pulse"
 	}
