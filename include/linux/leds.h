@@ -210,4 +210,19 @@ struct gpio_led_platform_data {
 struct platform_device *gpio_led_register_device(
 		int id, const struct gpio_led_platform_data *pdata);
 
+#ifdef CONFIG_LEDS_TRIGGER_CPU
+enum cpu_led_event {
+	CPU_LED_IDLE_START,	/* CPU enters idle */
+	CPU_LED_IDLE_END,	/* CPU idle ends */
+	CPU_LED_START,		/* Machine starts, especially resume */
+	CPU_LED_STOP,		/* Machine stops, especially suspend */
+	CPU_LED_HALTED,		/* Machine shutdown */
+};
+
+/* Use this routine to handle LEDs */
+extern void ledtrig_cpu(enum cpu_led_event evt);
+#else
+#define ledtrig_cpu(evt) do {} while (0)
+#endif
+
 #endif		/* __LINUX_LEDS_H_INCLUDED */

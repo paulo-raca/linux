@@ -25,7 +25,6 @@
 
 #include <mach/hardware.h>
 #include <asm/irq.h>
-#include <asm/leds.h>
 #include <asm/hardware/clps7111.h>
 
 #include <asm/mach/time.h>

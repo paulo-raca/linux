@@ -28,7 +28,6 @@
 #include <linux/io.h>
 
 #include <asm/irq.h>
-#include <asm/leds.h>
 #include <asm/mach-types.h>
 #include <asm/pmu.h>
 #include <asm/smp_twd.h>
@@ -385,9 +384,6 @@ static void __init realview_pbx_init(void)
 		amba_device_register(d, &iomem_resource);
 	}
 
-#ifdef CONFIG_LEDS
-	leds_event = realview_leds_event;
-#endif
 	realview_reset = realview_pbx_reset;
 }
 

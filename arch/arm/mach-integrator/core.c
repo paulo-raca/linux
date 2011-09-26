@@ -28,7 +28,6 @@
 #include <asm/irq.h>
 #include <mach/cm.h>
 #include <asm/system.h>
-#include <asm/leds.h>
 #include <asm/mach/time.h>
 #include <asm/pgtable.h>
 
@@ -202,8 +201,6 @@ static void integrator_uart_set_mctrl(struct amba_device *dev, void __iomem *bas
 static struct amba_pl010_data integrator_uart_data = {
 	.set_mctrl = integrator_uart_set_mctrl,
 };
-
-#define CM_CTRL	IO_ADDRESS(INTEGRATOR_HDR_CTRL)
 
 static DEFINE_SPINLOCK(cm_lock);
 

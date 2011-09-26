@@ -26,7 +26,6 @@
 
 #include <asm/system.h>
 #include <mach/hardware.h>
-#include <asm/leds.h>
 #include <asm/mach/time.h>
 #include <asm/errno.h>
 

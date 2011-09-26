@@ -30,11 +30,12 @@
 #include <linux/spi/spi.h>
 #include <linux/i2c/tps65010.h>
 #include <linux/smc91x.h>
+#include <linux/gpio.h>
+#include <linux/leds.h>
 
 #include <asm/setup.h>
 #include <asm/page.h>
 #include <mach/hardware.h>
-#include <asm/gpio.h>
 
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
@@ -344,6 +345,32 @@ static struct spi_board_info h3_spi_board_info[] __initdata = {
 	},
 };
 
+static struct gpio_led h3_gpio_led_pins[] = {
+	{
+		.name		= "h3:red",
+		.default_trigger = "heartbeat",
+		.gpio		= 3,
+	},
+	{
+		.name		= "h3:green",
+		.default_trigger = "cpu0",
+		.gpio		= OMAP_MPUIO(4),
+	},
+};
+
+static struct gpio_led_platform_data h3_gpio_led_data = {
+	.leds		= h3_gpio_led_pins,
+	.num_leds	= ARRAY_SIZE(h3_gpio_led_pins),
+};
+
+static struct platform_device h3_gpio_leds = {
+	.name	= "leds-gpio",
+	.id	= -1,
+	.dev	= {
+		.platform_data = &h3_gpio_led_data,
+	},
+};
+
 static struct platform_device *devices[] __initdata = {
 	&nor_device,
 	&nand_device,
@@ -351,6 +378,7 @@ static struct platform_device *devices[] __initdata = {
 	&intlat_device,
 	&h3_kp_device,
 	&h3_lcd_device,
+	&h3_gpio_leds,
 };
 
 static struct omap_usb_config h3_usb_config __initdata = {
@@ -423,6 +451,10 @@ static void __init h3_init(void)
 	omap_cfg_reg(E20_1610_KBR3);
 	omap_cfg_reg(E19_1610_KBR4);
 	omap_cfg_reg(N19_1610_KBR5);
+
+	/* GPIO based LEDs */
+	omap_cfg_reg(P18_1610_GPIO3);
+	omap_cfg_reg(MPUIO4);
 
 	platform_add_devices(devices, ARRAY_SIZE(devices));
 	spi_register_board_info(h3_spi_board_info,

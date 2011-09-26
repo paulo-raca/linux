@@ -55,8 +55,6 @@ static void __init cap9adk_init_early(void)
 	/* Initialize processor: 12 MHz crystal */
 	at91_initialize(12000000);
 
-	/* Setup the LEDs: USER1 and USER2 LED for cpu/timer... */
-	at91_init_leds(AT91_PIN_PA10, AT91_PIN_PA11);
 	/* ... POWER LED always on */
 	at91_set_gpio_output(AT91_PIN_PC29, 1);
 
@@ -359,6 +357,23 @@ static struct ac97c_platform_data cap9adk_ac97_data = {
 //	.reset_pin	= ... not connected
 };
 
+/*
+ * LEDs
+ */
+static struct gpio_led cap9adk_leds[] = {
+	{	/* D1 */
+		.name			= "led1",
+		.gpio			= AT91_PIN_PA10,
+		.active_low		= 1,
+		.default_trigger	= "heartbeat",
+	},
+	{	/* D2 */
+		.name			= "led2",
+		.gpio			= AT91_PIN_PA11,
+		.active_low		= 1,
+		.default_trigger	= "timer",
+	}
+};
 
 static void __init cap9adk_board_init(void)
 {
@@ -386,6 +401,8 @@ static void __init cap9adk_board_init(void)
 	at91_add_device_lcdc(&cap9adk_lcdc_data);
 	/* AC97 */
 	at91_add_device_ac97(&cap9adk_ac97_data);
+	/* LEDs */
+	at91_gpio_leds(cap9adk_leds, ARRAY_SIZE(cap9adk_leds));
 }
 
 MACHINE_START(AT91CAP9ADK, "Atmel AT91CAP9A-DK")

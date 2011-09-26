@@ -256,7 +256,7 @@ void led_trigger_register_simple(const char *name, struct led_trigger **tp)
 	struct led_trigger *trigger;
 	int err;
 
-	trigger = kzalloc(sizeof(struct led_trigger), GFP_KERNEL);
+	trigger = kzalloc(sizeof(struct led_trigger), GFP_ATOMIC);
 
 	if (trigger) {
 		trigger->name = name;

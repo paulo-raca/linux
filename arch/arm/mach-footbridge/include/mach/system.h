@@ -10,7 +10,6 @@
 #include <linux/io.h>
 #include <asm/hardware/dec21285.h>
 #include <mach/hardware.h>
-#include <asm/leds.h>
 #include <asm/mach-types.h>
 
 static inline void arch_idle(void)

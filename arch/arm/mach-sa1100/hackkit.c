@@ -21,6 +21,10 @@
 #include <linux/serial_core.h>
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/partitions.h>
+#include <linux/tty.h>
+#include <linux/gpio.h>
+#include <linux/leds.h>
+#include <linux/platform_device.h>
 
 #include <mach/hardware.h>
 #include <asm/mach-types.h>
@@ -185,9 +189,37 @@ static struct resource hackkit_flash_resource = {
 	.flags		= IORESOURCE_MEM,
 };
 
+/* LEDs */
+struct gpio_led hackkit_gpio_leds[] = {
+	{
+		.name			= "hackkit:red",
+		.default_trigger	= "cpu0",
+		.gpio			= 22,
+	},
+	{
+		.name			= "hackkit:green",
+		.default_trigger	= "heartbeat",
+		.gpio			= 23,
+	},
+};
+
+static struct gpio_led_platform_data hackkit_gpio_led_info = {
+	.leds		= hackkit_gpio_leds,
+	.num_leds	= ARRAY_SIZE(hackkit_gpio_leds),
+};
+
+static struct platform_device hackkit_leds = {
+	.name	= "leds-gpio",
+	.id	= -1,
+	.dev	= {
+		.platform_data	= &hackkit_gpio_led_info,
+	}
+};
+
 static void __init hackkit_init(void)
 {
 	sa11x0_register_mtd(&hackkit_flash_data, &hackkit_flash_resource, 1);
+	platform_device_register(&hackkit_leds);
 }
 
 /**********************************************************************
