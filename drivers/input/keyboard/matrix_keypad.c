@@ -419,6 +419,7 @@ static int __devinit matrix_keypad_probe(struct platform_device *pdev)
 	spin_lock_init(&keypad->lock);
 
 	input_dev->name		= pdev->name;
+	input_dev->phys         = "matrix_keypad/input0";
 	input_dev->id.bustype	= BUS_HOST;
 	input_dev->dev.parent	= &pdev->dev;
 	input_dev->evbit[0]	= BIT_MASK(EV_KEY);
