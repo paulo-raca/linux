@@ -812,7 +812,25 @@
 #define LED_MISC		0x08
 #define LED_MAIL		0x09
 #define LED_CHARGING		0x0a
-#define LED_MAX			0x0f
+
+#define LED_0			0x10
+#define LED_1			0x11
+#define LED_2			0x12
+#define LED_3			0x13
+#define LED_4			0x14
+#define LED_5			0x15
+#define LED_6			0x16
+#define LED_7			0x17
+#define LED_8			0x18
+#define LED_9			0x19
+#define LED_10			0x1a
+#define LED_11			0x1b
+#define LED_12			0x1c
+#define LED_13			0x1d
+#define LED_14			0x1e
+#define LED_15			0x1f
+
+#define LED_MAX			0x1f
 #define LED_CNT			(LED_MAX+1)
 
 /*
