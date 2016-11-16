@@ -1,0 +1,29 @@
+#include "sun8i-h3-orangepi-pc.dts"
+
+/ {
+	model = "Veridis A400";
+};
+
+&de {
+	status = "disabled";
+};
+
+&hdmi {
+	status = "disabled";
+};
+
+&i2s2 {
+	status = "disabled";
+};
+
+&ir {
+	status = "disabled";
+};
+
+&lcd0 {
+	status = "disabled";
+};
+
+&i2c0 {
+	status = "okay";
+};
