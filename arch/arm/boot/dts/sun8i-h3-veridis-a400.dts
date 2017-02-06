@@ -1,18 +1,74 @@
 #include "sun8i-h3-orangepi-pc.dts"
 
+
+//====== Create a PWM LED
+/ {
+	pwmleds {
+		compatible = "pwm-leds";
+		pwm_led {
+			label = "orangepi:red:foo";
+			pwms = <&pwm 0 1000000 0>;
+			active-low;
+			//linux,default-trigger = "cpu";
+			max-brightness = <255>;
+		};
+	};
+};
+
+&pio {
+	pwm_pin_a: pwm0@0 {
+		allwinner,pins = "PA5";
+		allwinner,function = "pwm0";
+		allwinner,drive = <SUN4I_PINCTRL_10_MA>;
+		allwinner,pull = <SUN4I_PINCTRL_NO_PULL>;
+	};
+};
+
+&pwm {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pwm_pin_a>;
+	status = "okay";
+  };
+
+
+
+//====== Move serial port to UART3
+/ {
+	aliases {
+		serial0 = &uart3;
+	};
+};
+
+&uart0 {
+	status = "disabled";
+};
+
+&uart3 {
+	status = "okay";
+};
+
+
+
+//====== Set model name
 / {
 	model = "Veridis A400";
 };
 
+
+
+//====== Enable I2C
+&i2c0 {
+	status = "okay";
+};
+
+
+
+//====== Disable stuff we don't use
 &de {
 	status = "disabled";
 };
 
 &hdmi {
-	status = "disabled";
-};
-
-&i2s2 {
 	status = "disabled";
 };
 
@@ -22,8 +78,4 @@
 
 &lcd0 {
 	status = "disabled";
-};
-
-&i2c0 {
-	status = "okay";
 };
