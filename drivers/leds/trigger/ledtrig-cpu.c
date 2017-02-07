@@ -30,13 +30,22 @@
 
 #define MAX_NAME_LEN	8
 
-struct led_trigger_cpu {
+struct led_trigger_cpu_each {
+	bool cpu_is_active;
 	char name[MAX_NAME_LEN];
 	struct led_trigger *_trig;
 };
 
-static DEFINE_PER_CPU(struct led_trigger_cpu, cpu_trig);
+static DEFINE_PER_CPU(struct led_trigger_cpu_each, cpu_trig_each);
 
+struct led_trigger_cpu_all {
+	atomic_t num_active;
+	struct led_trigger *_trig;
+};
+
+static struct led_trigger_cpu_all cpu_trig_all;
+
+static bool ledtrig_cpu_initialized = false;
 /**
  * ledtrig_cpu - emit a CPU event as a trigger
  * @evt: CPU event to be emitted
@@ -46,26 +55,44 @@ static DEFINE_PER_CPU(struct led_trigger_cpu, cpu_trig);
  */
 void ledtrig_cpu(enum cpu_led_event ledevt)
 {
-	struct led_trigger_cpu *trig = this_cpu_ptr(&cpu_trig);
+	struct led_trigger_cpu_each *cpu_trig_current = this_cpu_ptr(&cpu_trig_each);
+	bool is_active = cpu_trig_current->cpu_is_active;
+
+	/* Ignore if this is being called before initialization. */
+	if (!ledtrig_cpu_initialized) {
+		return;
+	}
 
 	/* Locate the correct CPU LED */
 	switch (ledevt) {
 	case CPU_LED_IDLE_END:
 	case CPU_LED_START:
 		/* Will turn the LED on, max brightness */
-		led_trigger_event(trig->_trig, LED_FULL);
+		is_active = true;
 		break;
 
 	case CPU_LED_IDLE_START:
 	case CPU_LED_STOP:
 	case CPU_LED_HALTED:
 		/* Will turn the LED off */
-		led_trigger_event(trig->_trig, LED_OFF);
+		is_active = false;
 		break;
 
 	default:
 		/* Will leave the LED as it is */
 		break;
+	}
+
+	if (is_active != cpu_trig_current->cpu_is_active) {
+		// Update trigger state
+		cpu_trig_current->cpu_is_active = is_active;
+		atomic_add(is_active ? 1 : -1, &cpu_trig_all.num_active);
+
+		led_trigger_event(cpu_trig_all._trig,
+		        LED_FULL * atomic_read(&cpu_trig_all.num_active) / num_present_cpus());
+
+		led_trigger_event(cpu_trig_current->_trig,
+		        is_active ? LED_FULL : LED_OFF);
 	}
 }
 EXPORT_SYMBOL(ledtrig_cpu);
@@ -113,13 +140,20 @@ static int __init ledtrig_cpu_init(void)
 	BUILD_BUG_ON(CONFIG_NR_CPUS > 9999);
 
 	/*
+	 * Registering a trigger for all CPUs.
+	 */
+	atomic_set(&cpu_trig_all.num_active, 0);
+	led_trigger_register_simple("cpu", &cpu_trig_all._trig);
+
+	/*
 	 * Registering CPU led trigger for each CPU core here
 	 * ignores CPU hotplug, but after this CPU hotplug works
 	 * fine with this trigger.
 	 */
 	for_each_possible_cpu(cpu) {
-		struct led_trigger_cpu *trig = &per_cpu(cpu_trig, cpu);
+		struct led_trigger_cpu_each *trig = &per_cpu(cpu_trig_each, cpu);
 
+		trig->cpu_is_active = false;
 		snprintf(trig->name, MAX_NAME_LEN, "cpu%d", cpu);
 
 		led_trigger_register_simple(trig->name, &trig->_trig);
@@ -135,6 +169,7 @@ static int __init ledtrig_cpu_init(void)
 
 	pr_info("ledtrig-cpu: registered to indicate activity on CPUs\n");
 
+	ledtrig_cpu_initialized = true;
 	return 0;
 }
 device_initcall(ledtrig_cpu_init);
